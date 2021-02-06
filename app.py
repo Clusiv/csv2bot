@@ -1,8 +1,13 @@
 import telebot
 import openpyxl
 import os, os.path
+from genmarkup import gen_markup
 
 data = None
+
+def msg(pers):
+    _msg = f"ФИО: {pers[0][0]}\nСальдо обязат.: {pers[0][2]}р\nСальдо пеня: {pers[0][3]}р\nСальдо общее: {pers[0][4]}р"
+    return _msg
 
 if os.path.isfile('base.xlsx'):
     data = list(openpyxl.load_workbook("base.xlsx").active.iter_rows(values_only=True))
@@ -35,10 +40,16 @@ def echo_all(message):
     pers = [x for x in data if message.text in x[0]]
     if pers and len(pers) == 1:
         # print(pers)
-        bot.send_message(chat_id, pers[0][2])
+        bot.send_message(chat_id, msg(pers))
     elif len(pers) > 1:
-        bot.send_message(chat_id, "Found " + str(len(pers)) + " lines")
+        bot.send_message(chat_id, "Found " + str(len(pers)) + " lines", reply_markup=gen_markup(pers))
     else:
         bot.send_message(chat_id, "Not found")
 
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    chat_id = call.from_user.id
+    pers = [x for x in data if call.data in x[0]]
+    # print(pers)
+    bot.send_message(chat_id, msg(pers))
 bot.polling()
