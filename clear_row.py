@@ -9,7 +9,7 @@ def load_wb():
 def get_ws():
     return load_wb().active
 
-def clear_col():
+def clear_row():
     wb = load_wb()
     ws = wb.active
 
@@ -23,18 +23,9 @@ def clear_col():
     for row in range(3, ws.max_row):
         ws.cell(column=1, row=row, value=count)
         count += 1
-    # print(ws)
 
-    # wb.save(filename = "base.xlsx")
-    return ws
+    
+    for row in ws.iter_cols(values_only=True, min_col=1, max_col=4, min_row=3, max_row=10):
+        print(row)
 
-
-# def test_clearing(s):
-#     # shutil.copyfile("base copy.xlsx", "base.xlsx")
-#     data = list(clear_col().iter_rows(values_only=True, min_row=3, max_row=20))
-#     pers = [x for x in data if s in x[0]]
-#     print(pers)
-#     # os.remove('base.xlsx')
-
-# test_clearing('Мусаев')
-# test_clearing('Хусиева')
+# clear_row()
