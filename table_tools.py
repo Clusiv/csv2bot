@@ -2,15 +2,8 @@ import openpyxl
 import shutil
 import os
 
-def load_wb():
+def clear_col():
     wb = openpyxl.load_workbook("base.xlsx")
-    return wb
-
-def get_ws():
-    return load_wb().active
-
-def clear_row():
-    wb = load_wb()
     ws = wb.active
 
     ws.delete_cols(0)
@@ -20,12 +13,13 @@ def clear_row():
 
     ws.insert_cols(0)
     count = 1
+
     for row in range(3, ws.max_row):
         ws.cell(column=1, row=row, value=count)
         count += 1
 
-    
-    for row in ws.iter_cols(values_only=True, min_col=1, max_col=4, min_row=3, max_row=10):
-        print(row)
+    return ws
 
-# clear_row()
+def get_data():
+    ws = clear_col()
+    return list(ws.iter_rows(values_only=True, min_row=2))

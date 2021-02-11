@@ -1,50 +1,57 @@
 import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import openpyxl
 import os, os.path
-from genmarkup import gen_markup
-from clear_col import clear_col, load_wb, get_ws
+from table_tools import get_data
 import resource
-
-def using(point=""):
-    usage=resource.getrusage(resource.RUSAGE_SELF)
-    return '''%s: usertime=%s systime=%s mem=%s mb
-           '''%(point,usage[0],usage[1],
-                usage[2]/1024.0 )
+from telegram_bot_pagination import InlineKeyboardPaginator
+from config import *
+# def using(point=""):
+#     usage=resource.getrusage(resource.RUSAGE_SELF)
+#     return '''%s: usertime=%s systime=%s mem=%s mb
+#            '''%(point,usage[0],usage[1],
+#                 usage[2]/1024.0 )
 
 def msg(pers):
     # print(pers)
     _msg = f"ФИО: {pers[1]}\nДокумент: {pers[2]}\nСальдо: {pers[3]}p"
     return _msg
 
+pers = None
 data = None
-def get_data(ws):
-    return list(ws.iter_rows(values_only=True, min_row=2))
-print(using('Before'))
+
+# print(using('Before'))
+
 if os.path.isfile('base.xlsx'):
-    data = get_data(clear_col())
-    # print(data[0][3])
+    data = get_data()
 
-bot = telebot.TeleBot("1543078251:AAHCkuKqo_0cjDUJe-AxS5mK7ViTukwCeLY")
+bot = telebot.TeleBot(TOKEN)
 
-print(using('After'))
-
+# print(using('After'))
 
 @bot.message_handler(content_types=['document'])
 def handle_docs(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Downloading to server...")
+    bot.send_message(chat_id, "Загрузка на серве...")
     downloaded_file = bot.download_file(bot.get_file(message.document.file_id).file_path)
     with open('base.xlsx','wb') as new_file:
         new_file.write(downloaded_file)
     global data
-    data = get_data(clear_col())
-    # print(data[0][3])
-    bot.send_message(chat_id, "Found " + str(len(data) - 2) + " lines")
+    data = get_data()
+    bot.send_message(chat_id, "Найдено " + str(len(data) - 2) + " строк")
 
 start = """
 Этот бот для поиска сальдо по фамилии.
 Отправьте фамилию и бот пришлет Сальдо
-Отправьте новый файл таблицы, для обновления данных"""
+Отправьте новый файл таблицы, для обновления данных.
+
+Формат таблицы:
+2 Столбец - Адресат операции
+6 Столбец - Основной документ
+9 Столбец - Сальдо общее
+Первые две строки пропускаются из-за информации о столбцах.
+Бот ожидает увидеть именно эти столбцы именно в таком порядке.
+"""
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
@@ -52,31 +59,74 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-    # print(data)
     chat_id = message.chat.id
+    if chat_id != CHAT_ID:
+        bot.send_message(chat_id, 'Неавторизован')
+        return
+    if message.text.isnumeric():
+        bot.send_message(chat_id, 'Пришлите ФИО или часть от них')
+        return
+    global data
+    if not data:
+        bot.send_message(chat_id, 'База пуста, отправьте файл. Информация /start')
+        return
+    
+    global pers
+    # Если два чат айди сделают поиск, то один перезапишет этот список на другой.
+    # Придется создать словарь из чатид:список
     pers = [x for x in data if message.text in x[1]]
+
     if pers and len(pers) == 1:
         # print(pers)
         bot.send_message(chat_id, msg(pers[0]), parse_mode='html')
-    elif len(pers) > 1 and  len(pers) < 6:
-        # print("##################")
-        # print(pers)
-        for p in pers:
-            msg
-        bot.send_message(chat_id, "Найдено " + str(len(pers)) + " позиций", reply_markup=gen_markup(pers))
-    elif len(pers) >= 6:
-        bot.send_message(chat_id, "Найден " + str(len(pers)) + " позиций\n")
+    elif pers and len(pers) > 1:
+        send_character_page(message)
     else:
-        bot.send_message(chat_id, "Ничего не найдено")
+        bot.send_message(chat_id, 'Ничего не найдено')
 
-@bot.callback_query_handler(func=lambda call: True)
+@bot.callback_query_handler(func=lambda call: 'pers' in call.data)
 def callback_query(call):
-    _id = int(call.data.split(':')[0])
-    # print(type(_id))
+    print('callback_query call.data: ' + str(call.data))
+    # bot.delete_message(call.message.chat.id, call.message.message_id - 1)
+
+    _id = int(call.data.split(':')[1])
     chat_id = call.from_user.id
-    # print(data[0][3])
     pers = [x for x in data if _id == x[0]]
-    # print(pers)
     bot.send_message(chat_id, msg(pers[0]))
-    print(using('Call'))
+    # print(using('Call'))
+
+@bot.callback_query_handler(func=lambda call: call.data.split('#')[0]=='character')
+def characters_page_callback(call):
+
+    print('characters_page_callback call.data ' + str(call.data))
+
+    page = int(call.data.split('#')[1])
+    bot.delete_message(
+        call.message.chat.id,
+        call.message.message_id
+    )
+    
+    send_character_page(call.message, page)
+
+def send_character_page(message, page=1):
+    # print(pers)
+    global pers
+    paginator = InlineKeyboardPaginator(
+        len(pers)//6 + 1,
+        current_page=page,
+        data_pattern='character#{page}'
+    )
+
+    for i in pers[6 * (page - 1):6 * page]:
+        paginator.add_before(InlineKeyboardButton(str(i[0]) + ':' + i[1], callback_data=f'pers:{i[0]}'))
+
+    print(page)
+    
+    bot.send_message(
+        message.chat.id,
+        msg(pers[page-1]),
+        reply_markup=paginator.markup,
+        parse_mode='Markdown'
+    )
+
 bot.polling()
