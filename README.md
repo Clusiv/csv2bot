@@ -1,18 +1,23 @@
 # Бот для фильтра данных из xlsx
 
-## Установка
+## Install part
 
+Install pip
 ```bash
 sudo apt install python3-pip
-
+```
+Install requirements
+```bash
 pip install -r requirements.txt
 ```
 
-Запуск в консоли
+## Running part
+
+Run with output in terminal
 ```bash
 python3 app.py
 ```
-Запуск в бекграунде
+Run in background
 ```bash
 nohup python3 app.py &
 ```

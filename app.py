@@ -1,11 +1,16 @@
+import os, os.path
+import resource
+# import logging
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-import openpyxl
-import os, os.path
-from table_tools import get_data
-import resource
 from telegram_bot_pagination import InlineKeyboardPaginator
+import openpyxl
+from table_tools import get_data
 from config import *
+
+# logging.basicConfig(filename='current.log', encoding='utf-8', level=logging.CRITICAL)
+
+
 # def using(point=""):
 #     usage=resource.getrusage(resource.RUSAGE_SELF)
 #     return '''%s: usertime=%s systime=%s mem=%s mb
@@ -51,6 +56,9 @@ start = """
 9 Столбец - Сальдо общее
 Первые две строки пропускаются из-за информации о столбцах.
 Бот ожидает увидеть именно эти столбцы именно в таком порядке.
+
+Узнать свой id /idme
+Добавить 
 """
 
 @bot.message_handler(commands=['start', 'help'])
@@ -59,8 +67,10 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
+
     chat_id = message.chat.id
-    if chat_id != CHAT_ID:
+    print(chat_id)
+    if chat_id not in CHAT_ID:
         bot.send_message(chat_id, 'Неавторизован')
         return
     if message.text.isnumeric():
@@ -86,11 +96,15 @@ def echo_all(message):
 
 @bot.callback_query_handler(func=lambda call: 'pers' in call.data)
 def callback_query(call):
+    chat_id = call.from_user.id
+    global data
+    if not data:
+        bot.send_message(chat_id, 'База пуста, отправьте файл. Информация /start')
+        return
+    
     print('callback_query call.data: ' + str(call.data))
     # bot.delete_message(call.message.chat.id, call.message.message_id - 1)
-
     _id = int(call.data.split(':')[1])
-    chat_id = call.from_user.id
     pers = [x for x in data if _id == x[0]]
     bot.send_message(chat_id, msg(pers[0]))
     # print(using('Call'))
@@ -110,7 +124,11 @@ def characters_page_callback(call):
 
 def send_character_page(message, page=1):
     # print(pers)
+    chat_id = message.chat.id
     global pers
+    if not pers:
+        bot.send_message(chat_id, 'База пуста, отправьте файл. Информация /start')
+        return
     paginator = InlineKeyboardPaginator(
         len(pers)//6 + 1,
         current_page=page,
