@@ -70,9 +70,9 @@ def echo_all(message):
 
     chat_id = message.chat.id
     print(chat_id)
-    if chat_id not in CHAT_ID:
-        bot.send_message(chat_id, 'Неавторизован')
-        return
+    # if chat_id not in CHAT_ID:
+    #     bot.send_message(chat_id, 'Неавторизован')
+    #     return
     if message.text.isnumeric():
         bot.send_message(chat_id, 'Пришлите ФИО или часть от них')
         return
