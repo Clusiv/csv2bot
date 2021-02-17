@@ -41,7 +41,7 @@ def handle_docs(message):
     if chat_id not in CHAT_ID:
         bot.send_message(chat_id, 'Неавторизован')
         return
-    bot.send_message(chat_id, "Загрузка на серве...")
+    bot.send_message(chat_id, "Загрузка на сервер...")
     downloaded_file = bot.download_file(bot.get_file(message.document.file_id).file_path)
     with open('base.xlsx','wb') as new_file:
         new_file.write(downloaded_file)
