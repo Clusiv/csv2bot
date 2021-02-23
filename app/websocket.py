@@ -47,7 +47,7 @@ app = flask.Flask(__name__)
 # Empty webserver index, return nothing, just http 200
 @app.route('/', methods=['GET', 'HEAD'])
 def index():
-    return ''
+    return 'Hello'
 
 
 # Process webhook calls
@@ -83,7 +83,7 @@ print(using('Before'))
 if os.path.isfile('base.xlsx'):
     data = get_data()
 
-bot = telebot.TeleBot(TOKEN)
+# bot = telebot.TeleBot(TOKEN)
 
 print(using('After'))
 
@@ -126,6 +126,10 @@ def send_clients(message):
     print(using('clients '))
     bot.reply_to(message, len(clients))
 
+@bot.message_handler(commands=['idme'])
+def send_clients(message):
+    bot.reply_to(message, message.chat.id)
+
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
 
@@ -163,7 +167,7 @@ def callback_query(call):
     if not data:
         bot.send_message(chat_id, 'База пуста, отправьте файл. Информация /start')
         return
-    
+
     print('callback_query call.data: ' + str(call.data))
     # bot.delete_message(call.message.chat.id, call.message.message_id - 1)
     _id = int(call.data.split(':')[1])
@@ -181,7 +185,7 @@ def characters_page_callback(call):
         call.message.chat.id,
         call.message.message_id
     )
-    
+
     send_character_page(call.message, page)
 
 def send_character_page(message, page=1):
@@ -212,7 +216,7 @@ def send_character_page(message, page=1):
 # Remove webhook, it fails sometimes the set if there is a previous webhook
 bot.remove_webhook()
 
-time.sleep(0.1)
+time.sleep(0.5)
 
 # Set webhook
 bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
