@@ -4,7 +4,8 @@ import os
 
 if os.path.isfile('./app.pid'):
     print('Bot is already running. Run ./stop.sh to stop current bot.')
-    exit()
+    sig = getattr(signal, "SIGKILL", signal.SIGTERM)
+    os.kill(os.getpid(), sig)
 else:
     PID = str(os.getpid())
     with open('./app.pid', 'w') as file:
@@ -21,8 +22,6 @@ from telegram_bot_pagination import InlineKeyboardPaginator
 import openpyxl
 from table_tools import get_data
 from config import *
-
-
 
 API_TOKEN = TOKEN
 
