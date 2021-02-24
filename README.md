@@ -17,7 +17,10 @@ Install requirements
 cd csv2bot
 pip3 install -r requirements.txt
 ```
-
+## Скачиваем репозиторий
+```bash
+git clone https://github.com/Clusiv/csv2bot
+```
 ## Настройка бота
 
 Запустите install.sh
