@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 
-if os.path.isfile('../app.pid'):
+if os.path.isfile('app.pid'):
     print('Bot is already running. Run ./stop.sh to stop current bot.')
     exit()
 else:
     PID = str(os.getpid())
-    with open('../app.pid', 'w') as file:
+    with open('app.pid', 'w') as file:
         file.write(PID)
 
 import logging
 import time
 import flask
 import telebot
-import os, os.path
+import os.path
 import resource
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram_bot_pagination import InlineKeyboardPaginator

@@ -1,2 +1,2 @@
-kill `cat app.pid`
-rm app.pid
+kill `cat app/app.pid`
+rm app/app.pid

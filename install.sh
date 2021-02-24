@@ -8,6 +8,7 @@ openssl req -new -x509 -days 3650 \
 -key webhook_pkey.pem -out webhook_cert.pem \
 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN="$IP
 
+mv webhook* app/
 chmod +x start.sh stop.sh
 
 echo "# Токен 

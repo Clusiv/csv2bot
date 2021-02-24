@@ -9,11 +9,13 @@
 
 Install pip
 ```bash
-sudo apt install python3-pip
+
+sudo apt update && sudo apt upgrade && sudo apt install python3-pip
 ```
 Install requirements
 ```bash
-pip install -r requirements.txt
+cd csv2bot
+pip3 install -r requirements.txt
 ```
 
 ## Настройка бота
