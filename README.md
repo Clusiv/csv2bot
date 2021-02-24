@@ -6,27 +6,26 @@
 3. Открытый порт 8443 на файрволе
 
 ## Установка
-
-Install pip
 ```bash
-
 sudo apt update && sudo apt upgrade -y && sudo apt install python3-pip -y
-```
-Install requirements
-```bash
-cd csv2bot
-pip3 install -r requirements.txt
 ```
 ## Скачиваем репозиторий
 ```bash
 git clone https://github.com/Clusiv/csv2bot
 ```
+Установка зависимостей
+```bash
+cd csv2bot && pip3 install -r requirements.txt
+```
 ## Настройка бота
 
 Запустите install.sh
 ```bash
-chmod +x install.sh
-./install.sh
+chmod +x install.sh && ./install.sh
+
+#Token: 
+#IP Address: 
+#Telegram User ID:
 ```
 ## Запуск
 
