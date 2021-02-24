@@ -1,16 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+
 import os
-
-if os.path.isfile('./app.pid'):
-    print('Bot is already running. Run ./stop.sh to stop current bot.')
-    sig = getattr(signal, "SIGKILL", signal.SIGTERM)
-    os.kill(os.getpid(), sig)
-else:
-    PID = str(os.getpid())
-    with open('./app.pid', 'w') as file:
-        file.write(PID)
-
 import logging
 import time
 import flask
@@ -213,8 +205,16 @@ time.sleep(0.5)
 bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
-# Start flask server
-app.run(host=WEBHOOK_LISTEN,
-        port=WEBHOOK_PORT,
-        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
-        debug=True)
+if os.path.isfile('./app.pid'):
+    print('Bot is already running. Run ./stop.sh to stop current bot.')
+    sig = getattr(signal, "SIGKILL", signal.SIGTERM)
+    os.kill(os.getpid(), sig)
+else:
+    PID = str(os.getpid())
+    with open('./app.pid', 'w') as file:
+        file.write(PID)
+    # Start flask server
+    app.run(host=WEBHOOK_LISTEN,
+            port=WEBHOOK_PORT,
+            ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+            debug=True)
