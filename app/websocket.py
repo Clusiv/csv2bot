@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
 import os
 import logging
 import time
@@ -21,8 +17,8 @@ WEBHOOK_HOST = IP
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
-WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = 'app/webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = 'app/webhook_pkey.pem'  # Path to the ssl private key
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -205,16 +201,16 @@ time.sleep(0.5)
 bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
-if os.path.isfile('./app.pid'):
+if os.path.isfile('app/app.pid'):
     print('Bot is already running. Run ./stop.sh to stop current bot.')
     sig = getattr(signal, "SIGKILL", signal.SIGTERM)
     os.kill(os.getpid(), sig)
 else:
     PID = str(os.getpid())
-    with open('./app.pid', 'w') as file:
+    with open('app/app.pid', 'w') as file:
         file.write(PID)
     # Start flask server
     app.run(host=WEBHOOK_LISTEN,
             port=WEBHOOK_PORT,
             ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
-            debug=True)
+            )
