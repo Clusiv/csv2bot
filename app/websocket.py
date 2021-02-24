@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# This is a simple echo bot using decorators and webhook with flask
-# It echoes any incoming text messages and does not use the polling method.
+if os.path.isfile('../app.pid'):
+    print('Bot is already running. Run ./stop.sh to stop current bot.')
+    exit()
+else:
+    PID = str(os.getpid())
+    with open('../app.pid', 'w') as file:
+        file.write(PID)
 
 import logging
 import time
@@ -16,14 +21,16 @@ import openpyxl
 from table_tools import get_data
 from config import *
 
-API_TOKEN = "1543078251:AAHCkuKqo_0cjDUJe-AxS5mK7ViTukwCeLY"
 
-WEBHOOK_HOST = '35.234.77.122'
+
+API_TOKEN = TOKEN
+
+WEBHOOK_HOST = IP
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
-WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = '../webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = '../webhook_pkey.pem'  # Path to the ssl private key
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -43,12 +50,10 @@ bot = telebot.TeleBot(API_TOKEN)
 
 app = flask.Flask(__name__)
 
-
 # Empty webserver index, return nothing, just http 200
 @app.route('/', methods=['GET', 'HEAD'])
 def index():
     return 'Hello'
-
 
 # Process webhook calls
 @app.route(WEBHOOK_URL_PATH, methods=['POST'])
@@ -60,7 +65,6 @@ def webhook():
         return ''
     else:
         flask.abort(403)
-
 
 clients = {}
 
@@ -83,14 +87,12 @@ print(using('Before'))
 if os.path.isfile('base.xlsx'):
     data = get_data()
 
-# bot = telebot.TeleBot(TOKEN)
-
 print(using('After'))
 
 @bot.message_handler(content_types=['document'])
 def handle_docs(message):
     chat_id = message.chat.id
-    if chat_id not in CHAT_ID:
+    if chat_id not in ADMIN_CHAT_ID:
         bot.send_message(chat_id, 'Неавторизован')
         return
     bot.send_message(chat_id, "Загрузка на сервер...")
@@ -101,20 +103,11 @@ def handle_docs(message):
     data = get_data()
     bot.send_message(chat_id, "Найдено " + str(len(data) - 2) + " строк")
     print(using('File imported'))
+
 start = """
-Этот бот для поиска сальдо по фамилии.
-Отправьте фамилию и бот пришлет Сальдо
-Отправьте новый файл таблицы, для обновления данных.
-
-Формат таблицы:
-2 Столбец - Адресат операции
-6 Столбец - Основной документ
-9 Столбец - Сальдо общее
-Первые две строки пропускаются из-за информации о столбцах.
-Бот ожидает увидеть именно эти столбцы именно в таком порядке.
-
-Узнать свой id /idme
-Добавить 
+Этот бот для поиска задолженности по арендным платежам 
+за земельные участки в Курчалоевском районе.
+Отправьте Фамилию (с большой буквы) и бот пришлет сумму оплаты.
 """
 
 @bot.message_handler(commands=['start', 'help'])
@@ -123,12 +116,10 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['clients'])
 def send_clients(message):
-    print(using('clients '))
+    if chat_id not in ADMIN_CHAT_ID:
+        bot.reply_to(message, 'Неавторизован')
+        return
     bot.reply_to(message, len(clients))
-
-@bot.message_handler(commands=['idme'])
-def send_clients(message):
-    bot.reply_to(message, message.chat.id)
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):

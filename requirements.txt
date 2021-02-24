@@ -8,3 +8,4 @@ pyTelegramBotAPI==3.7.6
 python-telegram-bot-pagination==0.0.2
 requests==2.25.1
 urllib3==1.26.3
+flask

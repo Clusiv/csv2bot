@@ -1,6 +1,11 @@
 # Бот для фильтра данных из xlsx
 
-## Install part
+## Требования:
+1. Ubuntu linux
+2. Белый IP адрес
+3. Открытый порт 8443 на файрволе
+
+## Установка
 
 Install pip
 ```bash
@@ -11,13 +16,20 @@ Install requirements
 pip install -r requirements.txt
 ```
 
-## Running part
+## Настройка бота
 
-Run with output in terminal
+Запустите install.sh
 ```bash
-python3 app.py
+chmod +x install.sh
+./install.sh
 ```
-Run in background
+## Запуск
+
+Запуск бота
 ```bash
-nohup python3 app.py &
+./start.sh
+```
+Остановка бота
+```bash
+./stop.sh
 ```
