@@ -104,6 +104,7 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['clients'])
 def send_clients(message):
+    chat_id = message.chat.id
     if chat_id not in ADMIN_CHAT_ID:
         bot.reply_to(message, 'Неавторизован')
         return
