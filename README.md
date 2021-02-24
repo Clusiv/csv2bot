@@ -10,7 +10,7 @@
 Install pip
 ```bash
 
-sudo apt update && sudo apt upgrade && sudo apt install python3-pip
+sudo apt update && sudo apt upgrade -y && sudo apt install python3-pip -y
 ```
 Install requirements
 ```bash
