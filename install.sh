@@ -1,5 +1,5 @@
 read -p "Token: " TOKEN
-read -p "IP Address:" IP
+read -p "IP Address: " IP
 read -p "Telegram User ID: " ID
 
 openssl genrsa -out webhook_pkey.pem 2048
@@ -16,7 +16,7 @@ TOKEN = '$TOKEN'
 
 # Пользователи которым разрешено обновлять базу
 # Числа разделенные запятой
-ADMIN_CHAT_ID = $ID
+ADMIN_CHAT_ID = $ID,
 
 # IP Адрес вашего сервера
 IP = '$IP'" > app/config.py

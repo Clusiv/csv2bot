@@ -72,7 +72,7 @@ data = None
 
 print(using('Before'))
 
-if os.path.isfile('base.xlsx'):
+if os.path.isfile('app/base.xlsx'):
     data = get_data()
 
 print(using('After'))
@@ -85,7 +85,7 @@ def handle_docs(message):
         return
     bot.send_message(chat_id, "Загрузка на сервер...")
     downloaded_file = bot.download_file(bot.get_file(message.document.file_id).file_path)
-    with open('base.xlsx','wb') as new_file:
+    with open('app/base.xlsx','wb') as new_file:
         new_file.write(downloaded_file)
     global data
     data = get_data()

@@ -3,7 +3,7 @@ import shutil
 import os
 
 def clear_col():
-    wb = openpyxl.load_workbook("base.xlsx")
+    wb = openpyxl.load_workbook("app/base.xlsx")
     ws = wb.active
 
     ws.delete_cols(0)
