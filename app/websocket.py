@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 import os
 
-if os.path.isfile('app.pid'):
+if os.path.isfile('./app.pid'):
     print('Bot is already running. Run ./stop.sh to stop current bot.')
     exit()
 else:
     PID = str(os.getpid())
-    with open('app.pid', 'w') as file:
+    with open('./app.pid', 'w') as file:
         file.write(PID)
 
 import logging
@@ -30,8 +30,8 @@ WEBHOOK_HOST = IP
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
-WEBHOOK_SSL_CERT = '../webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = '../webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 
 # Quick'n'dirty SSL certificate generation:
 #

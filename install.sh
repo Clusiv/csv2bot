@@ -21,7 +21,7 @@ ADMIN_CHAT_ID = $ID
 # IP Адрес вашего сервера
 IP = '$IP'" > app/config.py
 
-if test -f webhook_cert.pem; then
+if test -f app/webhook_cert.pem; then
     echo "###########"
     echo "# Success #"
     echo "###########"
