@@ -64,7 +64,7 @@ def using(point=""):
 
 def msg(pers):
     # print(pers)
-    _msg = f"ФИО: {pers[1]}\nДокумент: {pers[2]}\nСальдо: {pers[3]}p"
+    _msg = "ФИО: {}\nДокумент: {}\nСальдо: {}p".format(pers[1], pers[2], pers[3])
     return _msg
 
 pers = None
