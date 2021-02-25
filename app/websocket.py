@@ -64,7 +64,7 @@ def using(point=""):
 
 def msg(pers):
     # print(pers)
-    _msg = "ФИО: {}\nДокумент: {}\nСальдо: {}p".format(pers[1], pers[2], pers[3])
+    _msg = f"ФИО: {pers[1]}\nДокумент: {pers[2]}\nСальдо: {pers[3]}p"
     return _msg
 
 pers = None
@@ -182,7 +182,7 @@ def send_character_page(message, page=1):
     )
 
     for i in clients[chat_id][6 * (page - 1):6 * page]:
-        paginator.add_before(InlineKeyboardButton(str(i[0]) + ':' + i[1], callback_data='pers:{}'.format(i[0])))
+        paginator.add_before(InlineKeyboardButton(str(i[0]) + ':' + i[1], callback_data=f'pers:{i[0]}'))
 
     print(page)
     
